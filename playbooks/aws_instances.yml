@@ -6,7 +6,7 @@
   tasks:
     # Using ec2_ami_facts allows us to find a particular ami instance id regardless of region
     # Look for owner 309956199498 to find official Red Hat AMIs
-    - name: find ami instance-id for RHEL
+    - name: Find ami instance-id for RHEL
       amazon.aws.ec2_ami_info:
         region: "{{ ec2_region | default('us-east-1') }}"
         owners: 309956199498
@@ -17,20 +17,20 @@
 
     # The module ec2_ami_facts can return multiple ami instances for a given search
     # we will grab the latest instance (by date) that meets our criteria
-    - name: set AMI for RHEL
+    - name: Set AMI for RHEL
       ansible.builtin.set_fact:
         rhel_ami: >
           {{ amis.images | selectattr('name', 'defined') | sort(attribute='creation_date') | last }}
 
-    - name: retrieve VPC subnet id
+    - name: Retrieve VPC subnet id
       amazon.aws.ec2_vpc_subnet_info:
         region: "{{ ec2_region | default('us-east-1') }}"
         filters:
           "tag:Name": "{{ ec2_vpc_subnet_name | default('ansible-demo') }}"
       register: ec2_vpc_subnet_id
 
-    - name: debug ec2_vpc_subnet_name
-      debug:
+    - name: Debug ec2_vpc_subnet_name
+      ansible.builtin.debug:
         msg: "{{ ec2_vpc_subnet_id }}"
 
     - name: Create EC2 instances for ansible node (control node)
@@ -61,7 +61,7 @@
               delete_on_termination: "{{ delete_on_termination | default(True) }}"
       register: control_output
 
-    - name: grab instance ids to tag them all
+    - name: Grab instance ids to tag them all
       amazon.aws.ec2_instance_info:
         region: "{{ ec2_region | default('us-east-1') }}"
         filters:
@@ -80,4 +80,4 @@
           launch_time: "{{ item.1.launch_time }}"
       with_indexed_items:
         - "{{ control_output.instances }}"
-      when: control_output.instances|length > 0
+      when: control_output.instances | length > 0

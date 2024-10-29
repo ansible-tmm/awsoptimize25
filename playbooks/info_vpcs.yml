@@ -4,11 +4,11 @@
   connection: local
   gather_facts: false
   tasks:
-    - name: retrieve vpc information
+    - name: Retrieve vpc information
       amazon.aws.ec2_vpc_net_info:
         region: "{{ ec2_region | default('us-east-1') }}"
       register: vpc_info
 
-    - name: print vpc info to terminal
+    - name: Print vpc info to terminal
       ansible.builtin.debug:
         msg: "{{ vpc_info }}"

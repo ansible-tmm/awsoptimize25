@@ -1,25 +1,26 @@
 ---
-- hosts: ssm
+- name: AWS SSM assume
+  hosts: ssm
   gather_facts: false
   tasks:
 
     # This is assuming a role SSMSeanTesting configured under IAM
     - name: SSMrole
-      community.aws.sts_assume_role:
+      amazon.aws.sts_assume_role:
         role_arn: arn:aws:iam::962147768365:role/SSMSeanTesting
         role_session_name: "seantestrole"
       register: assumed_role
       delegate_to: localhost
       run_once: true
 
-    - name: print out assumed_role info
-      debug:
+    - name: Print out assumed_role info
+      ansible.builtin.debug:
         var: assumed_role
 
      # The SSMSeanTestingRole has 2 acces permissions and works
      # AmazonSSMFullAccess
      # AmazonS3FullAccess
-    - name: do file module via SSM
+    - name: Do file module via SSM
       vars:
         ansible_aws_ssm_access_key_id: "{{ assumed_role.sts_creds.access_key }}"
         ansible_aws_ssm_secret_access_key: "{{ assumed_role.sts_creds.secret_key }}"
@@ -34,12 +35,13 @@
         state: touch
       register: output
 
-    - name: print out output
-      debug:
+    - name: Print out output
+      ansible.builtin.debug:
         var: output
 
    # This won't work b/c the assume role can only do S3 and SSM
-    - amazon.aws.ec2_tag:
+    - name: Tag ec2
+      amazon.aws.ec2_tag:
         aws_access_key: "{{ assumed_role.sts_creds.access_key }}"
         aws_secret_key: "{{ assumed_role.sts_creds.secret_key }}"
         security_token: "{{ assumed_role.sts_creds.session_token }}"
