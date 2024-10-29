@@ -17,12 +17,12 @@
       register: ec2_instance_info
 
     - name: Display AWS EC2 info and tags information to terminal
-      debug:
+      ansible.builtin.debug:
         msg:
           - "There are {{ ec2_instance_info.instances | length }} instances that match your filter"
 
     - name: Display AWS EC2 info and tags information to terminal
-      debug:
+      ansible.builtin.debug:
         msg:
           - "{{ item.tags['Name'] | default('The tag *Name* Does not exist') }}"
           - "{{ item.instance_id }}"
@@ -31,7 +31,7 @@
       loop_control:
         label: "EC2 info and associated tags"
 
-    - name: save the instances to be used in a workflow variable for following job templates
+    - name: Save the instances to be used in a workflow variable for following job templates
       ansible.builtin.set_stats:
         data:
           identified_instances: "{{ ec2_instance_info.instances | map(attribute='instance_id') | list }}"

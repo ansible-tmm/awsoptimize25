@@ -6,7 +6,7 @@
   tasks:
     # If a secruity group is not created, instances will be tied to the Default secruity group that allows all traffic (NON-SECURE)
     - name: Create EC2 security group aws-demo1-sg
-      amazon.aws.ec2_group:
+      amazon.aws.ec2_security_group:
         name: "aws-demo1-sg"
         region: "{{ ec2_region }}"
         description: AWS demo1 SG for the demo
@@ -30,12 +30,12 @@
           Demo: "AWS demo1"
       register: create_subnet
 #
-    - name: save the create_subnet variable for following job templates
+    - name: Save the create_subnet variable for following job templates
       ansible.builtin.set_stats:
         data:
           vpcsubnetid: "{{ create_subnet.subnet.id }}"
         per_host: false
 #
-    - name: print the vpc subnet id
+    - name: Print the vpc subnet id
       ansible.builtin.debug:
         msg: "The Demo1 VPC Subnet ID is: '{{ create_subnet.subnet.id }}'"

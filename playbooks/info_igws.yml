@@ -9,6 +9,6 @@
         region: "{{ ec2_region | default('us-east-1') }}"
       register: igw_info
 
-    - name: print out igw info
+    - name: Print out igw info
       ansible.builtin.debug:
         msg: "{{ igw_info }}"

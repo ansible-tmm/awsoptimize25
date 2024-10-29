@@ -14,7 +14,7 @@
       register: vpc_info
 
     - name: Display AWS VPC IDs and tags information to terminal
-      debug:
+      ansible.builtin.debug:
         msg:
           - "{{ item.id }}"
           - "{{ item.tags['Name'] | default('The tag *Name* Does not exist on this VPC') }}"
@@ -29,7 +29,7 @@
       register: ec2_instance_info
 
     - name: Display AWS EC2 info and tags information to terminal
-      debug:
+      ansible.builtin.debug:
         msg:
           - "{{ item.tags['Name'] | default('The tag *Name* Does not exist') }}"
           - "{{ item.instance_id }}"

@@ -1,15 +1,16 @@
 ---
-- hosts: ssm
+- name: AWS SSM
+  hosts: ssm
   tasks:
-    - name: do something
-      command: ls -la
+    - name: Do something
+      ansible.builtin.command: ls -la
       register: output
 
-    - name: print out output
-      debug:
+    - name: Print out output
+      ansible.builtin.debug:
         var: output
 
-    - name: do something
+    - name: Do something
       vars:
         ansible_connection: "community.aws.aws_ssm"
         ansible_aws_ssm_region: "us-east-1"
@@ -19,8 +20,9 @@
       ansible.builtin.file:
         path: blah.txt
         state: touch
+        mode: u=rw,g=r,o=r
       register: output
 
-    - name: print out output
-      debug:
+    - name: Print out output
+      ansible.builtin.debug:
         var: output

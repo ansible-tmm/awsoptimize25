@@ -15,7 +15,7 @@
       register: ec2_instance_info
 
     - name: Display AWS EC2 information to terminal
-      debug:
+      ansible.builtin.debug:
         msg:
           - "EC2 Instance Name:             {{ item.tags['Name'] | default('The tag *Name* Does not exist') }}"
           - "EC2 Instance ID:               {{ item.instance_id }}"
@@ -24,7 +24,7 @@
           - "EC2 Instance Private IP:       {{ item.private_ip_address }}"
           - "EC2 Instance Public DNS Name:  {{ item.public_dns_name }}"
           - "EC2 Instance Private IP:       {{ item.public_ip_address }}"
-          - "EC2 Instance State:            {{ item.state.name }}"          
+          - "EC2 Instance State:            {{ item.state.name }}"
       loop: "{{ ec2_instance_info.instances }}"
       loop_control:
         label: "Display the EC2 information that we desire"

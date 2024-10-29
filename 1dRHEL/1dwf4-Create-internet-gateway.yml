@@ -5,7 +5,7 @@
   connection: local
   tasks:
     # Create Internet Gateway and attach it to VPC.  This allows instances on this VPC to reach the Internet
-    - name: create vpc internet gateway for aws-demo1-vpc
+    - name: Create vpc internet gateway for aws-demo1-vpc
       amazon.aws.ec2_vpc_igw:
         vpc_id: "{{ vpcid }}"
         region: "{{ ec2_region }}"
