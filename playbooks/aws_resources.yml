@@ -10,13 +10,11 @@
         name: "ansible-demo"
       register: create_key
 
-    # THIS TASK IS NO LONGER NEEDED AND SHOULD BE REMOVED
-    # - name: Save private key
-    #   ansible.builtin.copy:
-    #     content: "{{ create_key.key.private_key }}"
-    #     dest: "ansible-demo.pem"
-    #     mode: '0400'
-    #   when: create_key.changed
+    - name: Save private key
+      ansible.builtin.copy:
+        content: "{{ create_key.key.private_key }}"
+        dest: "ansible-demo.pem"
+        mode: '0400'
 
     - name: Add machine credential
       ansible.controller.credential:
@@ -26,13 +24,11 @@
         credential_type: Machine
         inputs:
           username: ec2-user
-          # Use the variable directly instead of the file lookup
-          ssh_key_data: "{{ create_key.key.private_key }}"
-          controller_host: "https://control"
-          controller_username: admin
-          controller_password: ansible123!
+          ssh_key_data: "{{ lookup('file', 'ansible-demo.pem') }}"
+        controller_host: "https://control"
+        controller_username: admin
+        controller_password: ansible123!
         validate_certs: false
-      when: create_key.changed
 
     - name: Create AWS VPC {{ ec2_name_prefix }}-vpc
       amazon.aws.ec2_vpc_net:
