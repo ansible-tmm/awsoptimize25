@@ -1,0 +1,48 @@
+---
+- name: Retrieve EC2 right-sizing recommendations from Compute Optimizer
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - amazon.aws
+
+  vars:
+    aws_region: "us-east-1"   # <-- Change to your preferred region
+    query: >
+      [].{
+        instanceName: instanceName,
+        instanceArn: instanceArn,
+        currentType: currentInstanceType,
+        finding: finding,
+        topType: recommendationOptions[0].instanceType,
+        estMonthlySavings: recommendationOptions[0].savingsOpportunity.estimatedMonthlySavings.value,
+        savingsPct: recommendationOptions[0].savingsOpportunity.savingsOpportunityPercentage
+      }
+
+  tasks:
+    - name: Get Compute Optimizer EC2 recommendations
+      ansible.builtin.command:
+        cmd: >
+          aws compute-optimizer get-ec2-instance-recommendations
+          --region {{ aws_region }}
+          --filters name=Finding,values=Overprovisioned
+          --output json
+      register: ec2_recs
+      changed_when: false
+
+    - name: Parse JSON response
+      ansible.builtin.set_fact:
+        ec2_recommendations: "{{ ec2_recs.stdout | from_json }}"
+
+    - name: Show Compute Optimizer recommendations
+      ansible.builtin.debug:
+        var: ec2_recommendations.instanceRecommendations
+
+    - name: Build simplified recommendations
+      ansible.builtin.set_fact:
+        simplified_recs: "{{ ec2_recommendations.instanceRecommendations
+                            | default([])
+                            | json_query(query) }}"
+
+    - name: Show simplified recommendations
+      ansible.builtin.debug:
+        var: simplified_recs
